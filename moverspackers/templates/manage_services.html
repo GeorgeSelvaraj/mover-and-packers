@@ -1,0 +1,407 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .pm-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    /* Page header */
+    .pm-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .pm-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+    }
+    .pm-icon-wrap svg { color: white; width: 20px; height: 20px; }
+    .pm-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .pm-page-header p { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .pm-add-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 11px 22px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white;
+        border-radius: 12px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px; font-weight: 600;
+        text-decoration: none;
+        border: none; cursor: pointer;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+        transition: transform .2s, box-shadow .2s;
+    }
+    .pm-add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(124,58,237,.45);
+        color: white; text-decoration: none;
+    }
+
+    /* Stats row */
+    .pm-stats-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+        animation: fadeUp 0.5s cubic-bezier(.22,1,.36,1) 0.06s both;
+    }
+    .pm-stat-card {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        padding: 18px 22px;
+        display: flex; align-items: center; gap: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+    .pm-stat-card .stat-icon {
+        width: 42px; height: 42px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+    }
+    .pm-stat-card .stat-icon.purple { background: #f3e8ff; }
+    .pm-stat-card .stat-label { font-size: 12px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+    .pm-stat-card .stat-value { font-size: 22px; font-weight: 700; color: #1e293b; margin-top: 2px; }
+
+    /* Card */
+    .pm-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.1s both;
+    }
+    .pm-card-stripe {
+        height: 5px;
+        background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899);
+    }
+    .pm-card-body { padding: 28px 30px; }
+
+    /* Table */
+    .pm-table-wrap { overflow-x: auto; }
+    .pm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    .pm-table thead tr {
+        background: #f8f5ff;
+    }
+    .pm-table thead th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #7c3aed;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-bottom: 2px solid #ede9fe;
+        white-space: nowrap;
+    }
+    .pm-table thead th:first-child { border-radius: 10px 0 0 0; }
+    .pm-table thead th:last-child  { border-radius: 0 10px 0 0; text-align: center; }
+
+    .pm-table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background .2s, transform .2s;
+        animation: rowSlide .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-table tbody tr:hover {
+        background: #faf5ff;
+        transform: translateX(3px);
+    }
+    .pm-table tbody tr:last-child { border-bottom: none; }
+
+    .pm-table td {
+        padding: 14px 16px;
+        color: #334155;
+        vertical-align: middle;
+    }
+    .pm-table td:last-child { text-align: center; }
+
+    /* Row animation stagger */
+    .pm-table tbody tr:nth-child(1)  { animation-delay: .08s; }
+    .pm-table tbody tr:nth-child(2)  { animation-delay: .12s; }
+    .pm-table tbody tr:nth-child(3)  { animation-delay: .16s; }
+    .pm-table tbody tr:nth-child(4)  { animation-delay: .20s; }
+    .pm-table tbody tr:nth-child(5)  { animation-delay: .24s; }
+    .pm-table tbody tr:nth-child(6)  { animation-delay: .28s; }
+    .pm-table tbody tr:nth-child(7)  { animation-delay: .32s; }
+    .pm-table tbody tr:nth-child(8)  { animation-delay: .36s; }
+    .pm-table tbody tr:nth-child(9)  { animation-delay: .40s; }
+    .pm-table tbody tr:nth-child(10) { animation-delay: .44s; }
+
+    .pm-sno {
+        width: 32px; height: 32px;
+        background: #f3e8ff;
+        color: #7c3aed;
+        border-radius: 8px;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 700;
+    }
+
+    .pm-service-img {
+        width: 72px; height: 72px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid #ede9fe;
+        transition: transform .25s, box-shadow .25s;
+    }
+    .pm-service-img:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 18px rgba(124,58,237,.25);
+    }
+
+    .pm-price-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        padding: 5px 14px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white;
+        border-radius: 20px;
+        font-size: 13px; font-weight: 700;
+        box-shadow: 0 3px 10px rgba(124,58,237,.3);
+    }
+
+    .pm-title-cell { font-weight: 600; color: #1e293b; }
+    .pm-date-cell  { font-size: 13px; color: #94a3b8; }
+
+    /* Action buttons */
+    .pm-action-group { display: flex; gap: 8px; justify-content: center; }
+    .pm-btn-edit, .pm-btn-del {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 7px 14px;
+        border-radius: 9px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px; font-weight: 600;
+        text-decoration: none;
+        border: none; cursor: pointer;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .pm-btn-edit {
+        background: #ecfdf5; color: #059669; border: 1.5px solid #a7f3d0;
+    }
+    .pm-btn-edit:hover {
+        background: #059669; color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(5,150,105,.3);
+        text-decoration: none;
+    }
+    .pm-btn-del {
+        background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3;
+    }
+    .pm-btn-del:hover {
+        background: #e11d48; color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(225,29,72,.3);
+        text-decoration: none;
+    }
+
+    .pm-empty {
+        text-align: center; padding: 60px 20px;
+        color: #94a3b8;
+    }
+    .pm-empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .pm-empty p { font-size: 15px; }
+
+    /* Search bar */
+    .pm-search-wrap {
+        display: flex; align-items: center;
+        background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 12px; padding: 10px 16px; gap: 10px;
+        max-width: 280px;
+        transition: border-color .25s, box-shadow .25s;
+    }
+    .pm-search-wrap:focus-within {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 4px rgba(124,58,237,.1);
+        background: white;
+    }
+    .pm-search-wrap svg { color: #94a3b8; width: 16px; height: 16px; flex-shrink: 0; }
+    .pm-search-wrap input {
+        border: none; background: transparent; outline: none;
+        font-family: 'Outfit', sans-serif; font-size: 14px; color: #1e293b;
+        width: 100%;
+    }
+    .pm-table-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .pm-table-header span { font-size: 13px; color: #94a3b8; }
+
+    /* Keyframes */
+    @keyframes slideDown {
+        from { opacity:0; transform: translateY(-18px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+        from { opacity:0; transform: translateY(20px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes rowSlide {
+        from { opacity:0; transform: translateX(-16px); }
+        to   { opacity:1; transform: translateX(0); }
+    }
+</style>
+
+<div class="pm-page">
+    <!-- Header -->
+    <div class="pm-page-header">
+        <div class="pm-page-header-left">
+            <div class="pm-icon-wrap">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Manage Services</h2>
+                <p>View, edit and delete your service listings</p>
+            </div>
+        </div>
+        <a href="{% url 'add_services' %}" class="pm-add-btn">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Service
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="pm-stats-row">
+        <div class="pm-stat-card">
+            <div class="stat-icon purple">🚚</div>
+            <div>
+                <div class="stat-label">Total Services</div>
+                <div class="stat-value">{{ services|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="pm-card">
+        <div class="pm-card-stripe"></div>
+        <div class="pm-card-body">
+
+            <div class="pm-table-header">
+                <span>{{ services|length }} service{{ services|length|pluralize }} found</span>
+                <div class="pm-search-wrap">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search services…"
+                           oninput="filterTable(this.value)">
+                </div>
+            </div>
+
+            <div class="pm-table-wrap">
+                <table class="pm-table" id="servicesTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Price</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in services %}
+                        <tr>
+                            <td><span class="pm-sno">{{ forloop.counter }}</span></td>
+
+                            <td>
+                                {% if i.image %}
+                                    <img src="{{ i.image.url }}" class="pm-service-img" alt="{{ i.title }}">
+                                {% else %}
+                                    <div style="width:72px;height:72px;border-radius:12px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:24px;">📦</div>
+                                {% endif %}
+                            </td>
+
+                            <td><span class="pm-title-cell">{{ i.title|default:"Untitled Service" }}</span></td>
+
+                            <td>
+                                {% if i.price %}
+                                    <span class="pm-price-badge">₹ {{ i.price }}</span>
+                                {% else %}
+                                    <span style="color:#94a3b8;">—</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="pm-date-cell">
+                                    {% if i.creationdate %}
+                                        {{ i.creationdate|date:"d M Y" }}<br>
+                                        <span style="font-size:12px;">{{ i.creationdate|date:"H:i" }}</span>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="pm-action-group">
+                                    <a href="{% url 'edit_service' i.id %}" class="pm-btn-edit">
+                                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <a href="{% url 'delete_service' i.id %}"
+                                       class="pm-btn-del"
+                                       onclick="return confirm('Delete this service?')">
+                                        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="pm-empty">
+                                    <div class="pm-empty-icon">📭</div>
+                                    <p>No services found. <a href="{% url 'add_services' %}" style="color:#7c3aed;font-weight:600;">Add one now →</a></p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterTable(q) {
+        var rows = document.querySelectorAll('#servicesTable tbody tr');
+        var lq = q.toLowerCase();
+        rows.forEach(function(row) {
+            var text = row.textContent.toLowerCase();
+            row.style.display = text.includes(lq) ? '' : 'none';
+        });
+    }
+</script>
+
+{% endblock %}

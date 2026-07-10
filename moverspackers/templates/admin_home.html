@@ -1,0 +1,587 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block main %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .db-root {
+    font-family: 'Space Grotesk', sans-serif;
+    padding: 32px 28px;
+    background: transparent;
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  .db-header {
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .db-header-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .db-live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #7c3aed;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .db-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+  }
+
+  .db-header p {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 6px;
+    margin-left: 22px;
+  }
+
+  /* ─── KPI GRID ─── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    border-radius: 20px;
+    padding: 22px 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s ease;
+    animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 22px 50px rgba(0,0,0,0.18);
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    transition: transform 0.4s ease;
+  }
+
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    transition: transform 0.4s ease;
+  }
+
+  .kpi-card:hover::before { transform: scale(1.5); }
+  .kpi-card:hover::after  { transform: scale(1.3); }
+
+  .kpi-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-size: 40px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .kpi-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    transition: background 0.2s;
+  }
+
+  .kpi-card:hover .kpi-icon-wrap { background: rgba(255,255,255,0.3); }
+
+  .kpi-arrow {
+    font-size: 20px;
+    color: rgba(255,255,255,0.5);
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .kpi-card:hover .kpi-arrow {
+    color: rgba(255,255,255,0.95);
+    transform: translate(3px,-3px);
+  }
+
+  .g1 { background: linear-gradient(135deg, #6d28d9 0%, #a855f7 100%); }
+  .g2 { background: linear-gradient(135deg, #b91c1c 0%, #f97316 100%); }
+  .g3 { background: linear-gradient(135deg, #047857 0%, #10b981 100%); }
+  .g4 { background: linear-gradient(135deg, #b45309 0%, #fbbf24 100%); }
+  .g5 { background: linear-gradient(135deg, #0f172a 0%, #475569 100%); }
+
+  .kpi-card:nth-child(1) { animation-delay: 0.06s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.12s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.18s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.24s; }
+  .kpi-card:nth-child(5) { animation-delay: 0.30s; }
+
+  /* ─── SUMMARY STRIP ─── */
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.55s 0.32s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .summary-item {
+    background: #fff;
+    border: 1px solid #f1f5f9;
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.25s;
+  }
+
+  .summary-item:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+  .summary-val {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.5px;
+  }
+
+  .summary-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-top: 4px;
+  }
+
+  /* ─── CHARTS ─── */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 16px;
+    animation: fadeUp 0.6s 0.4s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .chart-card {
+    background: #fff;
+    border: 1px solid #f1f5f9;
+    border-radius: 20px;
+    padding: 24px 22px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .chart-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+
+  .chart-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.3px;
+  }
+
+  .chart-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 3px;
+  }
+
+  .badge-live {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    border-radius: 20px;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .badge-live::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #16a34a;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .badge-overview {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.6); opacity: 0.4; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .db-root { padding: 20px 16px; }
+    .charts-row { grid-template-columns: 1fr; }
+    .summary-strip { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi-value { font-size: 32px; }
+  }
+
+  @media (max-width: 480px) {
+    .summary-strip { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="db-root">
+
+  <!-- HEADER -->
+  <div class="db-header">
+    <div class="db-header-inner">
+      <div class="db-live-dot"></div>
+      <h1>Dashboard Overview</h1>
+    </div>
+    <p>Real-time business intelligence — updated just now</p>
+  </div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+
+    <a href="{% url 'manage_services' %}" class="kpi-card g1">
+      <div class="kpi-label">Total Services</div>
+      <div class="kpi-value" data-target="{{ totalservices }}">0</div>
+      <div class="kpi-footer">
+        <div class="kpi-icon-wrap"><i class="fa-solid fa-truck"></i></div>
+        <span class="kpi-arrow"><i class="fa-solid fa-arrow-up-right"></i></span>
+      </div>
+    </a>
+
+    <a href="{% url 'unread_queries' %}" class="kpi-card g2">
+      <div class="kpi-label">Unread Queries</div>
+      <div class="kpi-value" data-target="{{ totalunread }}">0</div>
+      <div class="kpi-footer">
+        <div class="kpi-icon-wrap"><i class="fa-solid fa-envelope"></i></div>
+        <span class="kpi-arrow"><i class="fa-solid fa-arrow-up-right"></i></span>
+      </div>
+    </a>
+
+    <a href="{% url 'read_queries' %}" class="kpi-card g3">
+      <div class="kpi-label">Read Queries</div>
+      <div class="kpi-value" data-target="{{ totalread }}">0</div>
+      <div class="kpi-footer">
+        <div class="kpi-icon-wrap"><i class="fa-solid fa-envelope-open"></i></div>
+        <span class="kpi-arrow"><i class="fa-solid fa-arrow-up-right"></i></span>
+      </div>
+    </a>
+
+    <a href="{% url 'new_booking' %}" class="kpi-card g4">
+      <div class="kpi-label">New Bookings</div>
+      <div class="kpi-value" data-target="{{ newbooking }}">0</div>
+      <div class="kpi-footer">
+        <div class="kpi-icon-wrap"><i class="fa-solid fa-box"></i></div>
+        <span class="kpi-arrow"><i class="fa-solid fa-arrow-up-right"></i></span>
+      </div>
+    </a>
+
+    <a href="{% url 'old_booking' %}" class="kpi-card g5">
+      <div class="kpi-label">Old Bookings</div>
+      <div class="kpi-value" data-target="{{ oldbooking }}">0</div>
+      <div class="kpi-footer">
+        <div class="kpi-icon-wrap"><i class="fa-solid fa-circle-check"></i></div>
+        <span class="kpi-arrow"><i class="fa-solid fa-arrow-up-right"></i></span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- SUMMARY STRIP -->
+  <div class="summary-strip">
+    <div class="summary-item">
+      <div class="summary-val" id="sum-total-queries">—</div>
+      <div class="summary-label">Total Queries</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-val" id="sum-total-bookings">—</div>
+      <div class="summary-label">Total Bookings</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-val" id="sum-read-rate">—</div>
+      <div class="summary-label">Query Read Rate</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-row">
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Business Performance Trend</div>
+          <div class="chart-sub">Metrics at a glance</div>
+        </div>
+        <div class="badge-live">Live</div>
+      </div>
+      <canvas id="lineChart"></canvas>
+      <div class="chart-legend" id="line-legend"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Data Distribution</div>
+          <div class="chart-sub">Share by category</div>
+        </div>
+        <div class="badge-overview">Overview</div>
+      </div>
+      <canvas id="donutChart"></canvas>
+      <div class="chart-legend" id="donut-legend"></div>
+    </div>
+
+  </div>
+
+</div><!-- /db-root -->
+
+<script>
+(function () {
+
+  const RAW = {
+    services : {{ totalservices }},
+    unread   : {{ totalunread }},
+    read     : {{ totalread }},
+    newb     : {{ newbooking }},
+    oldb     : {{ oldbooking }}
+  };
+
+  const LABELS = ['Services', 'Unread', 'Read', 'New Bookings', 'Old Bookings'];
+  const VALS   = [RAW.services, RAW.unread, RAW.read, RAW.newb, RAW.oldb];
+  const COLORS = ['#7c3aed', '#ef4444', '#10b981', '#f59e0b', '#475569'];
+
+  /* count-up animation */
+  function countUp(el, target, delay) {
+    setTimeout(function () {
+      let cur = 0;
+      const increment = Math.max(1, Math.ceil(target / 35));
+      const timer = setInterval(function () {
+        cur = Math.min(cur + increment, target);
+        el.textContent = cur;
+        if (cur >= target) clearInterval(timer);
+      }, 28);
+    }, delay);
+  }
+
+  /* animate KPI values */
+  document.querySelectorAll('.kpi-value[data-target]').forEach(function (el, i) {
+    countUp(el, parseInt(el.dataset.target, 10), 200 + i * 80);
+  });
+
+  /* summary strip */
+  const tq = RAW.unread + RAW.read;
+  const tb = RAW.newb   + RAW.oldb;
+  const rp = tq > 0 ? Math.round((RAW.read / tq) * 100) : 0;
+
+  countUp(document.getElementById('sum-total-queries'),  tq, 350);
+  countUp(document.getElementById('sum-total-bookings'), tb, 430);
+  setTimeout(function () {
+    document.getElementById('sum-read-rate').textContent = rp + '%';
+  }, 510);
+
+  /* chart defaults */
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size   = 12;
+
+  const tooltipDefaults = {
+    backgroundColor : 'rgba(10,10,20,0.88)',
+    titleColor      : '#ffffff',
+    bodyColor       : 'rgba(255,255,255,0.68)',
+    padding         : 12,
+    cornerRadius    : 12,
+    borderColor     : 'rgba(124,58,237,0.35)',
+    borderWidth     : 1
+  };
+
+  /* line chart */
+  new Chart(document.getElementById('lineChart'), {
+    type : 'line',
+    data : {
+      labels   : LABELS,
+      datasets : [{
+        label                : 'Value',
+        data                 : VALS,
+        borderColor          : '#7c3aed',
+        backgroundColor      : 'rgba(124,58,237,0.09)',
+        fill                 : true,
+        tension              : 0.45,
+        borderWidth          : 2.5,
+        pointBackgroundColor : COLORS,
+        pointBorderColor     : '#ffffff',
+        pointBorderWidth     : 2.5,
+        pointRadius          : 5,
+        pointHoverRadius     : 8
+      }]
+    },
+    options : {
+      responsive : true,
+      animation  : { duration: 1400, easing: 'easeInOutQuart' },
+      plugins    : { legend: { display: false }, tooltip: tooltipDefaults },
+      scales : {
+        x : {
+          grid  : { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+          ticks : { color: '#9ca3af', padding: 6 }
+        },
+        y : {
+          beginAtZero : true,
+          grid        : { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+          ticks       : { color: '#9ca3af', padding: 6 }
+        }
+      }
+    }
+  });
+
+  /* line chart legend */
+  var lineLeg = document.getElementById('line-legend');
+  LABELS.forEach(function (l, i) {
+    lineLeg.innerHTML +=
+      '<div class="legend-item"><div class="legend-dot" style="background:' + COLORS[i] + '"></div>' + l + '</div>';
+  });
+
+  /* donut chart */
+  new Chart(document.getElementById('donutChart'), {
+    type : 'doughnut',
+    data : {
+      labels   : LABELS,
+      datasets : [{
+        data            : VALS,
+        backgroundColor : COLORS,
+        hoverOffset     : 10,
+        borderWidth     : 4,
+        borderColor     : '#ffffff'
+      }]
+    },
+    options : {
+      responsive : true,
+      cutout     : '68%',
+      animation  : { animateRotate: true, duration: 1400, easing: 'easeInOutQuart' },
+      plugins    : { legend: { display: false }, tooltip: tooltipDefaults }
+    }
+  });
+
+  /* donut legend */
+  var donutLeg = document.getElementById('donut-legend');
+  LABELS.forEach(function (l, i) {
+    donutLeg.innerHTML +=
+      '<div class="legend-item"><div class="legend-dot" style="background:' + COLORS[i] + '"></div>' + l + '</div>';
+  });
+
+})();
+</script>
+
+{% endblock %}

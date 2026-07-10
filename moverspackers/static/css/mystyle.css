@@ -1,0 +1,109 @@
+/* ================= mystyle.css — Public Site ================= */
+
+/* Public fixed navbar only — avoids clashing with admin sidebar .nav-link */
+.navbar.navbar-expand-md.navbar-dark.fixed-top .navbar-nav .nav-link {
+    color: #e5e5e5 !important;
+    font-weight: 500;
+    transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.navbar.navbar-expand-md.navbar-dark.fixed-top .navbar-nav .nav-link:hover {
+    color: #1a1a1a !important;
+    background: linear-gradient(45deg, #ffb300, #ff8f00);
+    border-radius: 25px;
+}
+
+.navbar.navbar-expand-md.navbar-dark.fixed-top .navbar-brand.brand-lockup {
+    letter-spacing: normal;
+}
+
+.navbar.navbar-expand-md.navbar-dark.fixed-top .nav-item .active {
+    background-color: rgba(255, 165, 0, 0.25);
+    border-radius: 8px;
+}
+
+/* Footer */
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Page title */
+.page-title {
+    color: red;
+    font-size: 2em;
+    padding: .5em 1em;
+    box-shadow: 0px 0px 2px #b0b0b0;
+    width: 30%;
+    margin: 0 auto;
+    text-transform: uppercase;
+}
+
+/* ================= ABOUT PAGE ================= */
+
+.section-subtitle {
+    margin-bottom: 10px;
+    padding-left: 10px;
+    text-transform: uppercase;
+    color: #999;
+    font-size: 50px;
+    font-family: tahoma;
+    border-left: 4px solid #007bff;
+    line-height: 1;
+}
+
+.section-main-title {
+    margin-bottom: 20px;
+    font-size: 32px;
+    font-weight: 600;
+    color: #222;
+}
+
+.about-item {
+    color: #555;
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+.about-box {
+    position: relative;
+    display: block;
+    margin-top: 20px;
+}
+
+.about-box img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(10px);
+    transition: 0.3s;
+}
+
+.about-box img:hover {
+    transform: translateY(0px) scale(1.02);
+}
+
+/* ================= CONTACT ================= */
+
+#contact {
+    background: url("/static/images/cool-image.png") center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#contact::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.contact-content {
+    position: relative;
+    color: white;
+}

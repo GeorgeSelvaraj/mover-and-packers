@@ -1,0 +1,450 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .ma-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    .ma-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .ma-page-header-left { display: flex; align-items: center; gap: 14px; }
+
+    .ma-icon-wrap {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .ma-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .ma-page-header p  { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .ma-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 360px) 1fr;
+        gap: 22px;
+        align-items: start;
+    }
+
+    .ma-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+
+    .ma-card-stripe { height: 5px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); }
+    .ma-card-body { padding: 26px 28px; }
+    .ma-card-title { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 18px; }
+
+    .ma-form-group { margin-bottom: 16px; }
+
+    .ma-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 8px;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+    }
+
+    .ma-input {
+        width: 100%;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        color: #1e293b;
+        background: #f8fafc;
+        outline: none;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+
+    .ma-input:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+        background: #fff;
+    }
+
+    .ma-check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .ma-btn {
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(124,58,237,.35);
+        transition: transform .2s, box-shadow .2s;
+    }
+
+    .ma-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,.45); }
+
+    .ma-error-list {
+        list-style: none;
+        margin-top: 8px;
+        color: #dc2626;
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+
+    .ma-error-list li { margin-top: 4px; }
+
+    .ma-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ma-table-header span { font-size: 13px; color: #94a3b8; }
+
+    .ma-search {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        min-width: 240px;
+        background: #f8fafc;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .ma-search:focus { border-color: #7c3aed; background: #fff; }
+
+    .ma-table-wrap { overflow-x: auto; }
+    .ma-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .ma-table thead tr { background: #f8f5ff; }
+    .ma-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #7c3aed;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-bottom: 2px solid #ede9fe;
+        white-space: nowrap;
+    }
+    .ma-table th:last-child, .ma-table td:last-child { text-align: center; }
+    .ma-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .2s; }
+    .ma-table tbody tr:hover { background: #faf5ff; }
+    .ma-table td { padding: 14px 16px; color: #334155; vertical-align: middle; }
+
+    .ma-name { font-weight: 700; color: #1e293b; }
+    .ma-muted { color: #94a3b8; font-size: 13px; }
+
+    .ma-pill {
+        display: inline-flex;
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+    .ma-pill.role-super { background: #ede9fe; color: #6d28d9; }
+    .ma-pill.role-staff { background: #e0f2fe; color: #0369a1; }
+    .ma-pill.status-active { background: #dcfce7; color: #15803d; }
+    .ma-pill.status-disabled { background: #fee2e2; color: #b91c1c; }
+    .ma-pill.you { background: #fef3c7; color: #92400e; }
+
+    .ma-action-group { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+
+    .ma-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1.5px solid transparent;
+        text-decoration: none;
+        background: transparent;
+        cursor: pointer;
+        transition: transform .2s, background .2s, color .2s, border-color .2s;
+    }
+
+    .ma-action:hover { transform: translateY(-2px); text-decoration: none; }
+
+    .ma-action.reset { background: #f3e8ff; color: #7c3aed; border-color: #e9d5ff; }
+    .ma-action.reset:hover { background: #7c3aed; color: #fff; }
+
+    .ma-action.toggle { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    .ma-action.toggle:hover { background: #b45309; color: #fff; }
+
+    .ma-action.delete { background: #fff1f2; color: #e11d48; border-color: #fecdd3; }
+    .ma-action.delete:hover { background: #e11d48; color: #fff; }
+
+    .ma-action.disabled { opacity: .45; cursor: not-allowed; }
+    .ma-action.disabled:hover { transform: none; }
+
+    .ma-inline-form { display: inline; }
+
+    .ma-empty { text-align: center; padding: 44px 20px; color: #94a3b8; }
+
+    .ma-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        padding: 14px 22px;
+        border-radius: 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.15);
+        animation: toastIn .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    .ma-toast.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .ma-toast.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    @keyframes slideDown { from { opacity:0; transform: translateY(-18px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes fadeUp    { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes toastIn   { from { opacity:0; transform: translateX(60px) scale(.9); } to { opacity:1; transform: translateX(0) scale(1); } }
+
+    @media (max-width: 900px) {
+        .ma-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="ma-page">
+    <div class="ma-page-header">
+        <div class="ma-page-header-left">
+            <div class="ma-icon-wrap"><i class="fas fa-users-cog"></i></div>
+            <div>
+                <h2>Admin Users</h2>
+                <p>Add new admins and manage existing ones</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ma-grid">
+        <div class="ma-card">
+            <div class="ma-card-stripe"></div>
+            <div class="ma-card-body">
+                <div class="ma-card-title">Add Admin</div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="ma-form-group">
+                        <label class="ma-label">Username</label>
+                        <input type="text" name="username" class="ma-input" required autocomplete="off">
+                    </div>
+
+                    <div class="ma-form-group">
+                        <label class="ma-label">Email</label>
+                        <input type="email" name="email" class="ma-input" autocomplete="off">
+                    </div>
+
+                    <div class="ma-form-group">
+                        <label class="ma-label">Password</label>
+                        <input type="password" name="password" class="ma-input" required autocomplete="new-password">
+                        {% if error == "weak" and field_errors %}
+                        <ul class="ma-error-list">
+                            {% for err in field_errors %}
+                            <li>{{ err }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+
+                    <label class="ma-check-row">
+                        <input type="checkbox" name="is_superuser">
+                        Grant super admin (can manage other admins)
+                    </label>
+
+                    <button type="submit" class="ma-btn">Create Admin</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="ma-card">
+            <div class="ma-card-stripe"></div>
+            <div class="ma-card-body">
+                <div class="ma-table-header">
+                    <span>{{ admins|length }} admin{{ admins|length|pluralize }} found</span>
+                    <input type="text" class="ma-search" placeholder="Search admins..." oninput="filterAdmins(this.value)">
+                </div>
+
+                <div class="ma-table-wrap">
+                    <table class="ma-table" id="adminsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in admins %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <span class="ma-name">{{ u.username }}</span>
+                                    {% if u.id == request.user.id %}
+                                    <span class="ma-pill you" style="margin-left:6px;">You</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ u.email|default:"-" }}</td>
+                                <td>
+                                    {% if u.is_superuser %}
+                                        <span class="ma-pill role-super">Super Admin</span>
+                                    {% else %}
+                                        <span class="ma-pill role-staff">Staff</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if u.is_active %}
+                                        <span class="ma-pill status-active">Active</span>
+                                    {% else %}
+                                        <span class="ma-pill status-disabled">Disabled</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="ma-muted">{{ u.date_joined|date:"d M Y" }}</span></td>
+                                <td>
+                                    <div class="ma-action-group">
+                                        <a href="{% url 'reset_admin_password' u.id %}" class="ma-action reset">
+                                            <i class="fas fa-key"></i> Reset
+                                        </a>
+
+                                        {% if u.id == request.user.id %}
+                                            <span class="ma-action toggle disabled" title="You can't disable yourself">
+                                                <i class="fas fa-toggle-on"></i>
+                                                {% if u.is_active %}Disable{% else %}Enable{% endif %}
+                                            </span>
+                                            <span class="ma-action delete disabled" title="You can't delete yourself">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </span>
+                                        {% else %}
+                                            <form class="ma-inline-form" method="post"
+                                                  action="{% url 'toggle_admin' u.id %}"
+                                                  onsubmit="return confirm('{% if u.is_active %}Disable{% else %}Enable{% endif %} this admin?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="ma-action toggle">
+                                                    <i class="fas fa-toggle-on"></i>
+                                                    {% if u.is_active %}Disable{% else %}Enable{% endif %}
+                                                </button>
+                                            </form>
+
+                                            <form class="ma-inline-form" method="post"
+                                                  action="{% url 'delete_admin' u.id %}"
+                                                  onsubmit="return confirm('Delete admin {{ u.username }}? This cannot be undone.');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="ma-action delete">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7">
+                                    <div class="ma-empty">No admins found.</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if error == "no" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var t = document.createElement('div');
+        t.className = 'ma-toast success';
+        t.innerHTML = '<i class="fas fa-check-circle"></i> Admin created successfully!';
+        document.body.appendChild(t);
+        setTimeout(function() { t.remove(); }, 2200);
+    });
+</script>
+{% endif %}
+
+{% if error == "duplicate" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var t = document.createElement('div');
+        t.className = 'ma-toast error';
+        t.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username already exists.';
+        document.body.appendChild(t);
+        setTimeout(function() { t.remove(); }, 2500);
+    });
+</script>
+{% endif %}
+
+{% if error == "missing" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var t = document.createElement('div');
+        t.className = 'ma-toast error';
+        t.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username and password are required.';
+        document.body.appendChild(t);
+        setTimeout(function() { t.remove(); }, 2500);
+    });
+</script>
+{% endif %}
+
+<script>
+    function filterAdmins(q) {
+        var rows = document.querySelectorAll('#adminsTable tbody tr');
+        var lq = q.toLowerCase();
+        rows.forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(lq) ? '' : 'none';
+        });
+    }
+</script>
+
+{% endblock %}

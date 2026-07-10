@@ -1,0 +1,385 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .pm-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    /* Page header */
+    .pm-page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .pm-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+    }
+    .pm-icon-wrap svg { color: white; width: 20px; height: 20px; }
+    .pm-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .pm-page-header p { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .pm-back-btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 10px 18px;
+        background: white; color: #475569;
+        border-radius: 12px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px; font-weight: 600;
+        text-decoration: none;
+        border: 1.5px solid #e2e8f0;
+        transition: border-color .2s, color .2s, transform .2s;
+    }
+    .pm-back-btn:hover {
+        border-color: #7c3aed; color: #7c3aed;
+        transform: translateX(-3px);
+        text-decoration: none;
+    }
+
+    /* Card */
+    .pm-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden;
+        max-width: 760px;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+    .pm-card-stripe {
+        height: 5px;
+        background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899);
+    }
+    .pm-card-body { padding: 36px 40px 40px; }
+
+    /* Two-col layout */
+    .pm-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    @media (max-width: 600px) { .pm-grid-2 { grid-template-columns: 1fr; } }
+    .pm-span-2 { grid-column: span 2; }
+    @media (max-width: 600px) { .pm-span-2 { grid-column: span 1; } }
+
+    /* Form groups */
+    .pm-form-group { animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) both; }
+    .pm-form-group:nth-child(1) { animation-delay: .10s; }
+    .pm-form-group:nth-child(2) { animation-delay: .16s; }
+    .pm-form-group:nth-child(3) { animation-delay: .22s; }
+    .pm-form-group:nth-child(4) { animation-delay: .28s; }
+    .pm-form-group:nth-child(5) { animation-delay: .34s; }
+
+    .pm-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 8px;
+        letter-spacing: .4px;
+        text-transform: uppercase;
+    }
+    .pm-label span { color: #ef4444; margin-left: 2px; }
+
+    .pm-input, .pm-textarea {
+        width: 100%;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        color: #1e293b;
+        background: #f8fafc;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+        outline: none;
+    }
+    .pm-input:focus, .pm-textarea:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+        background: #fff;
+    }
+    .pm-textarea { resize: vertical; min-height: 100px; }
+
+    /* Price */
+    .pm-price-wrap { position: relative; }
+    .pm-price-symbol {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        font-size: 16px; font-weight: 700; color: #7c3aed; pointer-events: none;
+    }
+    .pm-price-wrap .pm-input { padding-left: 36px; }
+
+    /* File input */
+    .pm-file-label {
+        display: flex; align-items: center; gap: 12px;
+        border: 1.5px dashed #c4b5fd;
+        border-radius: 12px; padding: 16px 18px;
+        background: #faf5ff; cursor: pointer;
+        transition: border-color .25s, background .25s;
+    }
+    .pm-file-label:hover { border-color: #7c3aed; background: #f3e8ff; }
+    .pm-file-icon {
+        width: 36px; height: 36px; border-radius: 9px;
+        background: #ede9fe;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .pm-file-icon svg { color: #7c3aed; width: 17px; height: 17px; }
+    .pm-file-text strong { display: block; font-size: 13px; font-weight: 600; color: #1e293b; }
+    .pm-file-text span { font-size: 12px; color: #94a3b8; }
+    .pm-file-input { display: none; }
+    #file-name-preview { font-size: 12.5px; color: #7c3aed; margin-top: 6px; display: none; }
+
+    /* Current image preview */
+    .pm-current-img-wrap {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 18px;
+        background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) .34s both;
+    }
+    .pm-current-img-wrap img {
+        width: 70px; height: 70px; border-radius: 12px; object-fit: cover;
+        border: 2px solid #ede9fe;
+        transition: transform .25s;
+    }
+    .pm-current-img-wrap img:hover { transform: scale(1.08); }
+    .pm-current-img-wrap .pm-img-info strong { display: block; font-size: 13px; font-weight: 600; color: #1e293b; }
+    .pm-current-img-wrap .pm-img-info span { font-size: 12px; color: #94a3b8; }
+
+    /* Change badge on image */
+    .pm-img-change-badge {
+        display: inline-block; padding: 3px 10px;
+        background: #ede9fe; color: #7c3aed;
+        border-radius: 20px; font-size: 11px; font-weight: 700;
+        margin-top: 5px;
+    }
+
+    /* Divider */
+    .pm-divider {
+        height: 1px; background: #f1f5f9; margin: 28px 0;
+    }
+
+    /* Buttons */
+    .pm-btn-row {
+        display: flex; justify-content: flex-end; gap: 12px;
+        animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) .42s both;
+    }
+    .pm-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 28px; border-radius: 12px;
+        font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+        cursor: pointer; border: none;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .pm-btn:hover { transform: translateY(-2px); }
+    .pm-btn:active { transform: translateY(0); }
+    .pm-btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white; box-shadow: 0 4px 16px rgba(124,58,237,.35);
+    }
+    .pm-btn-primary:hover { box-shadow: 0 8px 24px rgba(124,58,237,.45); }
+    .pm-btn-outline {
+        background: transparent; color: #64748b;
+        border: 1.5px solid #e2e8f0;
+    }
+    .pm-btn-outline:hover { border-color: #7c3aed; color: #7c3aed; }
+
+    /* Toast */
+    .pm-toast {
+        position: fixed; top: 24px; right: 24px;
+        padding: 14px 22px; border-radius: 14px;
+        font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+        color: white; z-index: 9999;
+        display: flex; align-items: center; gap: 10px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.15);
+        animation: toastIn .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-toast.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .pm-toast.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .pm-toast.hide    { animation: toastOut .35s ease forwards; }
+
+    /* Keyframes */
+    @keyframes slideDown {
+        from { opacity:0; transform: translateY(-18px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+        from { opacity:0; transform: translateY(22px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes toastIn {
+        from { opacity:0; transform: translateX(60px) scale(.9); }
+        to   { opacity:1; transform: translateX(0) scale(1); }
+    }
+    @keyframes toastOut {
+        to { opacity:0; transform: translateX(60px) scale(.9); }
+    }
+</style>
+
+<div class="pm-page">
+
+    <!-- Header -->
+    <div class="pm-page-header">
+        <div class="pm-page-header-left">
+            <div class="pm-icon-wrap">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Edit Service</h2>
+                <p>Update the details for <strong style="color:#7c3aed;">{{ service.title|default:"this service" }}</strong></p>
+            </div>
+        </div>
+        <a href="{% url 'manage_services' %}" class="pm-back-btn">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to List
+        </a>
+    </div>
+
+    <!-- Card -->
+    <div class="pm-card">
+        <div class="pm-card-stripe"></div>
+        <div class="pm-card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="pm-grid-2">
+
+                    <!-- Title -->
+                    <div class="pm-form-group pm-span-2">
+                        <label class="pm-label">Service Title <span>*</span></label>
+                        <input type="text" name="title" class="pm-input"
+                               value="{{ service.title }}" required>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="pm-form-group">
+                        <label class="pm-label">Price <span>*</span></label>
+                        <div class="pm-price-wrap">
+                            <span class="pm-price-symbol">₹</span>
+                            <input type="number" name="price" class="pm-input"
+                                   value="{{ service.price }}"
+                                   placeholder="Enter amount" required min="0">
+                        </div>
+                    </div>
+
+                    <!-- Upload new image -->
+                    <div class="pm-form-group">
+                        <label class="pm-label">Replace Image</label>
+                        <label class="pm-file-label" for="serviceImage">
+                            <div class="pm-file-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                </svg>
+                            </div>
+                            <div class="pm-file-text">
+                                <strong>Upload new image</strong>
+                                <span>Leave empty to keep current</span>
+                            </div>
+                        </label>
+                        <input type="file" id="serviceImage" name="image"
+                               class="pm-file-input" accept="image/*">
+                        <div id="file-name-preview"></div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="pm-form-group pm-span-2">
+                        <label class="pm-label">Description</label>
+                        <textarea name="description" class="pm-textarea">{{ service.description }}</textarea>
+                    </div>
+
+                </div>
+
+                <!-- Current image display -->
+                {% if service.image %}
+                <div class="pm-current-img-wrap" style="margin-top:20px;">
+                    <img src="{{ service.image.url }}" alt="Current image">
+                    <div class="pm-img-info">
+                        <strong>Current Image</strong>
+                        <span>This will be used unless you upload a new one</span>
+                        <span class="pm-img-change-badge">Active</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="pm-divider"></div>
+
+                <!-- Buttons -->
+                <div class="pm-btn-row">
+                    <a href="{% url 'manage_services' %}" class="pm-btn pm-btn-outline"
+                       style="text-decoration:none;">Cancel</a>
+                    <button type="submit" class="pm-btn pm-btn-primary">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Update Service
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Success / Error handling -->
+{% if error == "no" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        showToast('✅ Service updated successfully!', 'success');
+        setTimeout(function() {
+            window.location = "{% url 'manage_services' %}";
+        }, 1800);
+    });
+</script>
+{% endif %}
+
+{% if error == "yes" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        showToast('❌ Something went wrong, please try again.', 'error');
+    });
+</script>
+{% endif %}
+
+<script>
+    document.getElementById('serviceImage').addEventListener('change', function() {
+        var preview = document.getElementById('file-name-preview');
+        if (this.files && this.files[0]) {
+            preview.textContent = '📎 ' + this.files[0].name;
+            preview.style.display = 'block';
+        }
+    });
+
+    function showToast(msg, type) {
+        var t = document.createElement('div');
+        t.className = 'pm-toast ' + type;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function() {
+            t.classList.add('hide');
+            setTimeout(function() { t.remove(); }, 400);
+        }, 3200);
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,200 @@
+{% load static %}
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Your static CSS -->
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            /* ---- SIDEBAR TOGGLE ---- */
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('collapsed');
+                $('#content').toggleClass('expanded');
+            });
+
+            /* ---- CLOSE SIDEBAR ON OUTSIDE CLICK (mobile) ---- */
+            $(document).on('click', function (e) {
+                if ($(window).width() <= 768) {
+                    if (!$(e.target).closest('#sidebar, #sidebarCollapse').length) {
+                        $('#sidebar').addClass('collapsed');
+                        $('#content').addClass('expanded');
+                    }
+                }
+            });
+
+            /* ---- DATATABLE ---- */
+            setTimeout(function () {
+                if ($('#example').length > 0) {
+                    if ($.fn.DataTable.isDataTable('#example')) {
+                        $('#example').DataTable().destroy();
+                    }
+                    $('#example').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                    });
+                }
+            }, 100);
+
+        });
+    </script>
+
+    <title>Movers & Packers | Admin</title>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="vertical-nav" id="sidebar">
+
+    <div class="sidebar-header-block">
+        <p class="sidebar-title">Packers And Movers</p>
+        <div class="sidebar-profile-block d-flex align-items-center">
+            <div class="sidebar-avatar-circle mr-3">A</div>
+            <div>
+                <h4 class="sidebar-admin-name mb-0">Admin</h4>
+                <p class="sidebar-admin-email mb-0">{{ request.user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav flex-column">
+
+        <li class="nav-item">
+            <a href="{% url 'admin_home' %}" class="nav-link">
+                <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#servicesMenu" class="nav-link dropdown-toggle"
+               data-toggle="collapse" aria-expanded="false">
+                <i class="fas fa-truck mr-3"></i>Services
+            </a>
+            <div class="collapse" id="servicesMenu">
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'add_services' %}">Add Services</a>
+                    <a class="dropdown-item" href="{% url 'manage_services' %}">Manage Services</a>
+                </div>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a href="#bookingMenu" class="nav-link dropdown-toggle"
+               data-toggle="collapse" aria-expanded="false">
+                <i class="fas fa-box mr-3"></i>Booking
+            </a>
+            <div class="collapse" id="bookingMenu">
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'new_booking' %}">New Booking</a>
+                    <a class="dropdown-item" href="{% url 'old_booking' %}">Old Booking</a>
+                </div>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'agents' %}" class="nav-link">
+                <i class="fas fa-user-tie mr-3"></i>Agents
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#queriesMenu" class="nav-link dropdown-toggle"
+               data-toggle="collapse" aria-expanded="false">
+                <i class="fas fa-envelope mr-3"></i>Queries
+            </a>
+            <div class="collapse" id="queriesMenu">
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'unread_queries' %}">Unread Queries</a>
+                    <a class="dropdown-item" href="{% url 'read_queries' %}">Read Queries</a>
+                </div>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'search' %}" class="nav-link">
+                <i class="fas fa-search mr-3"></i>Search
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'change_password' %}" class="nav-link">
+                <i class="fas fa-key mr-3"></i>Change Password
+            </a>
+        </li>
+
+        {% if request.user.is_superuser %}
+        <li class="nav-item">
+            <a href="{% url 'manage_admins' %}" class="nav-link">
+                <i class="fas fa-users-cog mr-3"></i>Admin Users
+            </a>
+        </li>
+        {% endif %}
+
+        <li class="nav-item">
+            <a href="#reportsMenu" class="nav-link dropdown-toggle"
+               data-toggle="collapse" aria-expanded="false">
+                <i class="fas fa-chart-bar mr-3"></i>Reports
+            </a>
+            <div class="collapse" id="reportsMenu">
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'booking_report' %}">Booking Dates</a>
+
+                </div>
+            </div>
+        </li>
+
+    </ul>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="page-content" id="content">
+
+    <div class="admin-topbar">
+        <button id="sidebarCollapse" type="button" class="toggle-btn">
+            <i class="fas fa-bars mr-2"></i>Toggle
+        </button>
+        <a href="{% url 'logout' %}" class="logout-btn">
+            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+        </a>
+    </div>
+
+    {% block main %}
+    {% endblock %}
+
+</div>
+
+</body>
+</html>

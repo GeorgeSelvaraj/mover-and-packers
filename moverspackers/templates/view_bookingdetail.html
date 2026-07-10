@@ -1,0 +1,438 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .eb-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    /* ── Header ── */
+    .eb-page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .eb-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .eb-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+    }
+    .eb-icon-wrap svg { color: #fff; width: 20px; height: 20px; }
+    .eb-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .eb-page-header p  { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .eb-back-btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 10px 18px; background: #fff; color: #475569;
+        border-radius: 12px; font-family: 'Outfit', sans-serif;
+        font-size: 13px; font-weight: 600; text-decoration: none;
+        border: 1.5px solid #e2e8f0;
+        transition: border-color .2s, color .2s, transform .2s;
+    }
+    .eb-back-btn:hover {
+        border-color: #7c3aed; color: #7c3aed;
+        transform: translateX(-3px); text-decoration: none;
+    }
+
+    /* ── Card ── */
+    .eb-card {
+        background: #fff; border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden; max-width: 860px;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+    .eb-card-stripe { height: 5px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); }
+    .eb-card-body { padding: 36px 40px 40px; }
+
+    /* ── Section title ── */
+    .eb-section-title {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 20px;
+    }
+    .eb-section-title-bar {
+        width: 4px; height: 20px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 4px;
+    }
+    .eb-section-title span {
+        font-size: 13px; font-weight: 700; color: #475569;
+        text-transform: uppercase; letter-spacing: .5px;
+    }
+
+    /* ── Grid ── */
+    .eb-grid-2 {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    @media (max-width: 620px) { .eb-grid-2 { grid-template-columns: 1fr; } }
+    .eb-span-2 { grid-column: span 2; }
+    @media (max-width: 620px) { .eb-span-2 { grid-column: span 1; } }
+
+    /* ── Form groups ── */
+    .eb-form-group { animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) both; }
+    .eb-form-group:nth-child(1)  { animation-delay: .08s; }
+    .eb-form-group:nth-child(2)  { animation-delay: .13s; }
+    .eb-form-group:nth-child(3)  { animation-delay: .18s; }
+    .eb-form-group:nth-child(4)  { animation-delay: .23s; }
+    .eb-form-group:nth-child(5)  { animation-delay: .28s; }
+    .eb-form-group:nth-child(6)  { animation-delay: .33s; }
+    .eb-form-group:nth-child(7)  { animation-delay: .38s; }
+    .eb-form-group:nth-child(8)  { animation-delay: .43s; }
+    .eb-form-group:nth-child(9)  { animation-delay: .48s; }
+    .eb-form-group:nth-child(10) { animation-delay: .53s; }
+
+    .eb-label {
+        display: block; font-size: 12px; font-weight: 700;
+        color: #475569; margin-bottom: 8px;
+        letter-spacing: .4px; text-transform: uppercase;
+    }
+    .eb-label span { color: #ef4444; margin-left: 2px; }
+
+    .eb-input, .eb-textarea, .eb-select {
+        width: 100%;
+        border: 1.5px solid #e2e8f0; border-radius: 12px;
+        padding: 12px 16px;
+        font-family: 'Outfit', sans-serif; font-size: 15px; color: #1e293b;
+        background: #f8fafc;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+        outline: none; appearance: none;
+    }
+    .eb-input:focus, .eb-textarea:focus, .eb-select:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+        background: #fff;
+    }
+    .eb-textarea { resize: vertical; min-height: 90px; }
+
+    /* date picker tint */
+    .eb-input[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: .5; cursor: pointer;
+        filter: invert(28%) sepia(90%) saturate(700%) hue-rotate(240deg);
+    }
+
+    /* price prefix */
+    .eb-price-wrap { position: relative; }
+    .eb-price-symbol {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        font-size: 16px; font-weight: 700; color: #7c3aed; pointer-events: none;
+    }
+    .eb-price-wrap .eb-input { padding-left: 32px; }
+
+    /* custom select arrow */
+    .eb-select-wrap { position: relative; }
+    .eb-select-wrap::after {
+        content: '';
+        position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+        width: 0; height: 0;
+        border-left: 5px solid transparent; border-right: 5px solid transparent;
+        border-top: 6px solid #7c3aed; pointer-events: none;
+    }
+    .eb-select { padding-right: 36px; }
+
+    /* payment status badge colors inside select */
+    .eb-payment-status-hint {
+        display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+    }
+    .eb-ps-chip {
+        padding: 2px 10px; border-radius: 20px;
+        font-size: 11px; font-weight: 700;
+    }
+    .eb-ps-chip.pending  { background: #fef3c7; color: #d97706; }
+    .eb-ps-chip.partial  { background: #dbeafe; color: #2563eb; }
+    .eb-ps-chip.paid     { background: #d1fae5; color: #059669; }
+
+    /* ── Divider ── */
+    .eb-divider { height: 1px; background: #f1f5f9; margin: 28px 0; }
+
+    /* ── Button row ── */
+    .eb-btn-row {
+        display: flex; justify-content: flex-end; gap: 12px;
+        animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) .58s both;
+    }
+    .eb-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 28px; border-radius: 12px;
+        font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+        cursor: pointer; border: none; text-decoration: none;
+        transition: transform .2s, box-shadow .2s;
+    }
+    .eb-btn:hover { transform: translateY(-2px); }
+    .eb-btn:active { transform: translateY(0); }
+    .eb-btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,.35);
+    }
+    .eb-btn-primary:hover { box-shadow: 0 8px 24px rgba(124,58,237,.45); }
+    .eb-btn-outline {
+        background: transparent; color: #64748b;
+        border: 1.5px solid #e2e8f0;
+    }
+    .eb-btn-outline:hover { border-color: #7c3aed; color: #7c3aed; text-decoration: none; }
+
+    /* ── Toast ── */
+    .eb-toast {
+        position: fixed; top: 24px; right: 24px;
+        padding: 14px 22px; border-radius: 14px;
+        font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+        color: #fff; z-index: 9999;
+        display: flex; align-items: center; gap: 10px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.15);
+        animation: toastIn .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    .eb-toast.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .eb-toast.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .eb-toast.hide    { animation: toastOut .35s ease forwards; }
+
+    @keyframes slideDown {
+        from { opacity:0; transform: translateY(-18px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+        from { opacity:0; transform: translateY(22px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes toastIn {
+        from { opacity:0; transform: translateX(60px) scale(.9); }
+        to   { opacity:1; transform: translateX(0) scale(1); }
+    }
+    @keyframes toastOut {
+        to { opacity:0; transform: translateX(60px) scale(.9); }
+    }
+</style>
+
+<div class="eb-page">
+
+    <!-- Header -->
+    <div class="eb-page-header">
+        <div class="eb-page-header-left">
+            <div class="eb-icon-wrap">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Edit Booking</h2>
+                <p>Updating details for <strong style="color:#7c3aed;">{{ booking.name|default:"this booking" }}</strong></p>
+            </div>
+        </div>
+        <a href="{% url 'view_bookingdetail' booking.id %}" class="eb-back-btn">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back
+        </a>
+    </div>
+
+    <!-- Card -->
+    <div class="eb-card">
+        <div class="eb-card-stripe"></div>
+        <div class="eb-card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- ── Booking Details Section ── -->
+                <div class="eb-section-title">
+                    <div class="eb-section-title-bar"></div>
+                    <span>Booking Details</span>
+                </div>
+
+                <div class="eb-grid-2">
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Name <span>*</span></label>
+                        <input type="text" name="name" class="eb-input"
+                               value="{{ booking.name }}" required>
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Contact</label>
+                        <input type="text" name="mobile" class="eb-input"
+                               value="{{ booking.mobile }}">
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Email</label>
+                        <input type="email" name="email" class="eb-input"
+                               value="{{ booking.email }}">
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Shifting Date</label>
+                        <input type="date" name="shiftingdate" class="eb-input"
+                               value="{{ booking.shiftingdate|date:'Y-m-d' }}">
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">From Location</label>
+                        <input type="text" name="location" class="eb-input"
+                               value="{{ booking.location }}" placeholder="Pickup address">
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">To Location</label>
+                        <input type="text" name="shiftingloc" class="eb-input"
+                               value="{{ booking.shiftingloc }}" placeholder="Drop address">
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Brief Items</label>
+                        <input type="text" name="briefitems" class="eb-input"
+                               value="{{ booking.briefitems }}" placeholder="e.g. Furniture, Electronics">
+                    </div>
+
+                    <div class="eb-form-group eb-span-2">
+                        <label class="eb-label">Items Detail</label>
+                        <textarea name="items" class="eb-textarea"
+                                  placeholder="List all items to be moved…">{{ booking.items }}</textarea>
+                    </div>
+
+                </div>
+
+                <div class="eb-divider"></div>
+
+                <!-- Agent Assignment Section -->
+                <div class="eb-section-title">
+                    <div class="eb-section-title-bar"></div>
+                    <span>Agent Assignment</span>
+                </div>
+
+                <div class="eb-grid-2">
+                    <div class="eb-form-group">
+                        <label class="eb-label">Assigned Agent</label>
+                        <div class="eb-select-wrap">
+                            <select name="assigned_agent" class="eb-select">
+                                <option value="">Select Agent</option>
+                                {% for agent in agents %}
+                                <option value="{{ agent.id }}"
+                                    {% if booking.assigned_agent_id == agent.id %}selected{% endif %}>
+                                    {{ agent.name }}{% if agent.mobile %} - {{ agent.mobile }}{% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Current Agent</label>
+                        <input type="text" class="eb-input"
+                               value="{% if booking.assigned_agent %}{{ booking.assigned_agent.name }}{% else %}Not assigned{% endif %}"
+                               readonly>
+                    </div>
+                </div>
+
+                <div class="eb-divider"></div>
+
+                <!-- ── Payment Details Section ── -->
+                <div class="eb-section-title">
+                    <div class="eb-section-title-bar"></div>
+                    <span>Payment Details</span>
+                </div>
+
+                <div class="eb-grid-2">
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Total Amount</label>
+                        <div class="eb-price-wrap">
+                            <span class="eb-price-symbol">₹</span>
+                            <input type="number" name="total_amount" class="eb-input"
+                                   value="{{ booking.total_amount }}" min="0" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Advance Paid</label>
+                        <div class="eb-price-wrap">
+                            <span class="eb-price-symbol">₹</span>
+                            <input type="number" name="advance_paid" class="eb-input"
+                                   value="{{ booking.advance_paid }}" min="0" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Payment Status</label>
+                        <div class="eb-select-wrap">
+                            <select name="payment_status" class="eb-select">
+                                <option value="Pending" {% if booking.payment_status == "Pending" %}selected{% endif %}>Pending</option>
+                                <option value="Partial" {% if booking.payment_status == "Partial" %}selected{% endif %}>Partial</option>
+                                <option value="Paid"    {% if booking.payment_status == "Paid"    %}selected{% endif %}>Paid</option>
+                            </select>
+                        </div>
+                        <div class="eb-payment-status-hint">
+                            <span class="eb-ps-chip pending">Pending</span>
+                            <span class="eb-ps-chip partial">Partial</span>
+                            <span class="eb-ps-chip paid">Paid</span>
+                        </div>
+                    </div>
+
+                    <div class="eb-form-group">
+                        <label class="eb-label">Admin Remark</label>
+                        <textarea name="remarks" class="eb-textarea"
+                                  placeholder="Internal notes…">{{ booking.remarks }}</textarea>
+                    </div>
+
+                </div>
+
+                <div class="eb-divider"></div>
+
+                <!-- Buttons -->
+                <div class="eb-btn-row">
+                    <a href="{% url 'view_bookingdetail' booking.id %}" class="eb-btn eb-btn-outline">
+                        Cancel
+                    </a>
+                    <button type="submit" class="eb-btn eb-btn-primary">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Update Booking
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if error == "no" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        showToast('✅ Booking updated successfully!', 'success');
+        setTimeout(function() {
+            window.location = "{% url 'view_bookingdetail' booking.id %}";
+        }, 1800);
+    });
+</script>
+{% endif %}
+
+{% if error == "yes" %}
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        showToast('❌ Something went wrong, please try again.', 'error');
+    });
+</script>
+{% endif %}
+
+<script>
+    function showToast(msg, type) {
+        var t = document.createElement('div');
+        t.className = 'eb-toast ' + type;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(function() {
+            t.classList.add('hide');
+            setTimeout(function() { t.remove(); }, 400);
+        }, 3200);
+    }
+</script>
+
+{% endblock %}

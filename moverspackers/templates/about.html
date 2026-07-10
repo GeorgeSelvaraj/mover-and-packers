@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>About Us | Packers & Movers</title>
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #0a0f1e;
+            --sky: #0ea5e9;
+            --electric: #2563eb;
+            --amber: #f59e0b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f6ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── HERO ── */
+        .about-hero {
+            background: linear-gradient(135deg, #0a0f1e 0%, #0f1f3d 50%, #0d2052 100%);
+            padding: 70px 20px 55px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 55% 60% at 15% 50%, rgba(245,158,11,0.1) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 85% 30%, rgba(14,165,233,0.12) 0%, transparent 70%);
+        }
+
+        .about-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0; right: 0;
+            height: 55px;
+            background: #f0f6ff;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(245,158,11,0.15);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: #fcd34d;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 18px;
+            position: relative;
+            animation: fadeDown 0.7s ease both;
+        }
+
+        .about-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(34px, 5.5vw, 58px);
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            position: relative;
+            animation: fadeDown 0.7s 0.1s ease both;
+        }
+
+        .about-hero h1 span {
+            background: linear-gradient(90deg, #fcd34d, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .about-hero > p {
+            color: #94a3b8;
+            font-size: 15px;
+            margin-top: 10px;
+            position: relative;
+            animation: fadeDown 0.7s 0.2s ease both;
+        }
+
+        /* ── MAIN WRAPPER ── */
+        .about-wrapper {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 60px 20px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 860px) {
+            .about-wrapper { grid-template-columns: 1fr; gap: 28px; }
+        }
+
+        /* ── LEFT: TEXT CARD ── */
+        .about-text-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 36px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.07);
+            animation: slideLeft 0.6s 0.1s ease both;
+            opacity: 0;
+        }
+
+        .section-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14,165,233,0.08);
+            border: 1px solid rgba(14,165,233,0.2);
+            color: var(--sky);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 16px;
+        }
+
+        .about-text-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(26px, 3.5vw, 36px);
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .about-text-card h2 span {
+            background: linear-gradient(90deg, #0ea5e9, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .about-text-card p {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+
+        .stat-box:hover {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(14,165,233,0.25);
+        }
+
+        .stat-box:hover .stat-num,
+        .stat-box:hover .stat-label { color: #fff; }
+
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--electric);
+            transition: color 0.25s;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-top: 3px;
+            transition: color 0.25s;
+        }
+
+        /* ── RIGHT: VISUAL CARD ── */
+        .about-visual-card {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            animation: slideRight 0.6s 0.2s ease both;
+            opacity: 0;
+        }
+
+        /* Image or illustration box */
+        .img-box {
+            background: linear-gradient(135deg, #0a0f1e, #0f1f3d);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        .img-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 60%, rgba(14,165,233,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 50% at 80% 30%, rgba(245,158,11,0.08) 0%, transparent 70%);
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+            mix-blend-mode: luminosity;
+            opacity: 0.85;
+        }
+
+        /* Fallback truck illustration if no image */
+        .truck-illustration {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 32px;
+        }
+
+        .truck-illustration i {
+            font-size: 72px;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            margin-bottom: 12px;
+            animation: truckBounce 2.5s ease-in-out infinite;
+        }
+
+        .truck-illustration p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        @keyframes truckBounce {
+            0%, 100% { transform: translateX(0); }
+            30%       { transform: translateX(12px); }
+            60%       { transform: translateX(-4px); }
+        }
+
+        /* Why items card */
+        .why-card {
+            background: linear-gradient(135deg, #0a0f1e, #0f1f3d);
+            border-radius: 22px;
+            padding: 26px 24px;
+            color: #fff;
+        }
+
+        .why-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .why-card h4 span {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .why-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .why-dot {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            background: rgba(14,165,233,0.15);
+            border: 1px solid rgba(14,165,233,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #38bdf8;
+            flex-shrink: 0;
+        }
+
+        .why-text h6 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+        }
+
+        .why-text p {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(-24px); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(24px); }
+            to   { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'header.html' %}
+
+<!-- Hero -->
+<div class="about-hero">
+    <div class="hero-tag"><i class="fas fa-star"></i> Who We Are</div>
+    <h1>About <span>Secure Shift</span></h1>
+    <p>Your trusted partner for safe, timely and stress-free relocations.</p>
+</div>
+
+<!-- Main content -->
+<div class="about-wrapper">
+
+    <!-- Left: Text -->
+    <div class="about-text-card">
+        <div class="section-subtitle"><i class="fas fa-truck-moving"></i> About Us</div>
+        <h2>We are <span>Professionals</span></h2>
+        <p>
+            Secure Shift Packers and Movers is a premier relocation service provider dedicated
+            to making your next move your best move. Whether you are shifting across the street
+            or across the country, we bring precision, punctuality, and protection to every project.
+            We pride ourselves on transparent pricing, a professional crew, and a commitment to
+            keeping your "shift" secure from start to finish. Sit back and relax — we've got
+            the heavy lifting covered.
+        </p>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-num">5000+</div>
+                <div class="stat-label">Happy Clients</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num">12+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num">50+</div>
+                <div class="stat-label">Cities Covered</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Visual -->
+    <div class="about-visual-card">
+
+        <div class="img-box">
+            <img src="{% static 'images/Morning Car.png' %}" alt="About Image">
+            <!-- If image doesn't show, truck animation shows as fallback -->
+            <div class="truck-illustration">
+                <i class="fas fa-truck-moving"></i>
+                <p>Reliable • Safe • On Time</p>
+            </div>
+        </div>
+
+        <div class="why-card">
+            <h4>Why Choose <span>Us?</span></h4>
+            <div class="why-grid">
+                <div class="why-item">
+                    <div class="why-dot"><i class="fas fa-shield-alt"></i></div>
+                    <div class="why-text">
+                        <h6>Insured Moving</h6>
+                        <p>All items covered during transit.</p>
+                    </div>
+                </div>
+                <div class="why-item">
+                    <div class="why-dot"><i class="fas fa-clock"></i></div>
+                    <div class="why-text">
+                        <h6>On-Time</h6>
+                        <p>Guaranteed timely delivery.</p>
+                    </div>
+                </div>
+                <div class="why-item">
+                    <div class="why-dot"><i class="fas fa-rupee-sign"></i></div>
+                    <div class="why-text">
+                        <h6>Fair Pricing</h6>
+                        <p>No hidden charges, ever.</p>
+                    </div>
+                </div>
+                <div class="why-item">
+                    <div class="why-dot"><i class="fas fa-headset"></i></div>
+                    <div class="why-text">
+                        <h6>24/7 Support</h6>
+                        <p>Always here when you need us.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Services | Packers & Movers</title>
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #0a0f1e;
+            --sky: #0ea5e9;
+            --electric: #2563eb;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f6ff;
+            overflow-x: hidden;
+        }
+
+        /* ── HERO ── */
+        .services-hero {
+            position: relative;
+            height: 52vh;
+            min-height: 300px;
+            overflow: hidden;
+        }
+
+        .services-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.08);
+            animation: zoomOut 8s ease forwards;
+        }
+
+        @keyframes zoomOut {
+            to { transform: scale(1); }
+        }
+
+        .services-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,15,30,0.55) 0%, rgba(10,15,30,0.75) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .services-hero-overlay .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14,165,233,0.18);
+            border: 1px solid rgba(14,165,233,0.35);
+            color: #7dd3fc;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 16px;
+            animation: fadeDown 0.8s ease both;
+        }
+
+        .services-hero-overlay h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            animation: fadeDown 0.8s 0.1s ease both;
+        }
+
+        .services-hero-overlay h1 span {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .services-hero-overlay p {
+            color: #cbd5e1;
+            font-size: 15px;
+            margin-top: 10px;
+            animation: fadeDown 0.8s 0.2s ease both;
+        }
+
+        .hero-wave {
+            position: absolute;
+            bottom: -2px; left: 0; right: 0;
+        }
+
+        /* ── BREADCRUMB ── */
+        .breadcrumb-bar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        .breadcrumb-bar .container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .breadcrumb-bar a {
+            color: var(--sky);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-bar a:hover { text-decoration: underline; }
+        .breadcrumb-bar .current { color: var(--ink); font-weight: 600; }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            animation: fadeUp 0.7s ease both;
+        }
+
+        .section-header .sub {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--sky);
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            color: var(--ink);
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 15px;
+            margin-top: 10px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ── SERVICES GRID ── */
+        .services-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .service-card {
+            background: #fff;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+            cursor: pointer;
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.10s; }
+        .service-card:nth-child(2) { animation-delay: 0.18s; }
+        .service-card:nth-child(3) { animation-delay: 0.26s; }
+        .service-card:nth-child(4) { animation-delay: 0.34s; }
+        .service-card:nth-child(5) { animation-delay: 0.42s; }
+        .service-card:nth-child(6) { animation-delay: 0.50s; }
+
+        .service-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(14,165,233,0.15);
+            border-color: #bae6fd;
+        }
+
+        .card-img-wrap {
+            position: relative;
+            height: 210px;
+            overflow: hidden;
+        }
+
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-card:hover .card-img-wrap img {
+            transform: scale(1.08);
+        }
+
+        .card-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10,15,30,0.6) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .service-card:hover .card-img-overlay { opacity: 1; }
+
+        .card-badge {
+            position: absolute;
+            top: 14px; right: 14px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+
+        .card-body-custom {
+            padding: 22px 22px 14px;
+        }
+
+        .card-body-custom h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+
+        .card-body-custom p {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .card-footer-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 22px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-footer-custom span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--sky);
+        }
+
+        .card-arrow {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--electric);
+            font-size: 13px;
+            transition: all 0.25s ease;
+        }
+
+        .service-card:hover .card-arrow {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+            transform: rotate(45deg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: none; }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'header.html' %}
+
+<div class="services-hero">
+    <img src="{% static 'images/login image.png' %}" alt="Services">
+    <div class="services-hero-overlay">
+        <div class="tag">What We Offer</div>
+        <h1>Our <span>Services</span></h1>
+        <p>Professional moving solutions tailored for you</p>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#f0f6ff"/>
+    </svg>
+</div>
+
+<div class="breadcrumb-bar">
+    <div class="container">
+        <a href="{% url 'index' %}"><i class="fas fa-home mr-1"></i>Home</a>
+        <span>/</span>
+        <span class="current">Services</span>
+    </div>
+</div>
+
+<div class="section-header">
+    <div class="sub">From Our Side</div>
+    <h2>Everything You Need to Move</h2>
+    <p>End-to-end packing, moving, and relocation services with care.</p>
+</div>
+
+<div class="services-grid">
+    {% for i in services %}
+    <div class="service-card">
+        <div class="card-img-wrap">
+            <img src="{{ i.image.url }}" alt="{{ i.title }}">
+            <div class="card-img-overlay"></div>
+            <div class="card-badge">Service</div>
+        </div>
+        <div class="card-body-custom">
+            <h4>{{ i.title }}</h4>
+            <p>{{ i.description }}</p>
+        </div>
+        <div class="card-footer-custom">
+            <span>Learn More</span>
+            <div class="card-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-box-open"></i>
+        <p>No services available at the moment.</p>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

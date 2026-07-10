@@ -1,0 +1,188 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .rq-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+    .rq-page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .rq-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .rq-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+    }
+    .rq-icon-wrap svg { color: #fff; width: 20px; height: 20px; }
+    .rq-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .rq-page-header p  { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .rq-card {
+        background: #fff; border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+    .rq-card-stripe { height: 5px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); }
+    .rq-card-body { padding: 36px 40px 40px; }
+
+    .rq-table-wrap {
+        overflow-x: auto; border-radius: 14px;
+        border: 1.5px solid #e2e8f0;
+        animation: fadeUp 0.45s cubic-bezier(.22,1,.36,1) .1s both;
+    }
+    .rq-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .rq-table thead tr {
+        background: linear-gradient(90deg, #7c3aed11, #a855f711);
+        border-bottom: 2px solid #ede9fe;
+    }
+    .rq-table thead th {
+        padding: 13px 16px; text-align: left;
+        font-size: 11px; font-weight: 700; color: #7c3aed;
+        letter-spacing: .5px; text-transform: uppercase; white-space: nowrap;
+    }
+    .rq-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .18s; }
+    .rq-table tbody tr:last-child { border-bottom: none; }
+    .rq-table tbody tr:hover { background: #faf5ff; }
+    .rq-table td { padding: 13px 16px; color: #334155; vertical-align: middle; }
+    .rq-table td:first-child { font-size: 12px; font-weight: 700; color: #94a3b8; }
+
+    .rq-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 12px; border-radius: 20px;
+        font-size: 12px; font-weight: 700;
+    }
+    .rq-badge::before {
+        content: ''; width: 6px; height: 6px;
+        border-radius: 50%; background: currentColor; opacity: .6;
+    }
+    .rq-badge-success { background: #d1fae5; color: #059669; }
+
+    .rq-action-btn {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 6px 14px; border-radius: 8px;
+        font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+        text-decoration: none; border: none; cursor: pointer;
+        transition: transform .18s, box-shadow .18s;
+    }
+    .rq-action-btn:hover { transform: translateY(-1px); text-decoration: none; }
+    .rq-action-btn-view {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,.3);
+    }
+    .rq-action-btn-view:hover { box-shadow: 0 4px 14px rgba(124,58,237,.4); color: #fff; }
+    .rq-action-btn-delete { background: #fee2e2; color: #dc2626; }
+    .rq-action-btn-delete:hover { background: #fecaca; color: #dc2626; }
+
+    .rq-empty { text-align: center; padding: 48px 24px; }
+    .rq-empty-icon {
+        width: 56px; height: 56px; background: #f1f5f9; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+    }
+    .rq-empty-icon svg { color: #94a3b8; width: 24px; height: 24px; }
+    .rq-empty h6 { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    .rq-empty p  { font-size: 13px; color: #94a3b8; }
+
+    @keyframes slideDown {
+        from { opacity:0; transform: translateY(-18px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+        from { opacity:0; transform: translateY(22px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+</style>
+
+<div class="rq-page">
+    <div class="rq-page-header">
+        <div class="rq-page-header-left">
+            <div class="rq-icon-wrap">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Read Queries</h2>
+                <p>All queries that have been reviewed</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="rq-card">
+        <div class="rq-card-stripe"></div>
+        <div class="rq-card-body">
+            <div class="rq-table-wrap">
+                <table class="rq-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in contact %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ i.name }}</strong></td>
+                            <td>{{ i.email }}</td>
+                            <td>{{ i.contact_no }}</td>
+                            <td>{{ i.messagedate }}</td>
+                            <td><span class="rq-badge rq-badge-success">Read</span></td>
+                            <td style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <a href="{% url 'view_queries' i.id %}" class="rq-action-btn rq-action-btn-view">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    View
+                                </a>
+                                <a href="{% url 'delete_query' i.id %}" class="rq-action-btn rq-action-btn-delete"
+                                   onclick="return confirm('Are you sure?')">
+                                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M3 7h18"/>
+                                    </svg>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="padding:0;border:none;">
+                                <div class="rq-empty">
+                                    <div class="rq-empty-icon">
+                                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <h6>No read queries</h6>
+                                    <p>There are no queries that have been reviewed yet.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Us | Packers & Movers</title>
+
+    <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f6ff;
+            margin: 0;
+        }
+
+        .contact-hero {
+            background: linear-gradient(135deg, #0a0f1e, #0d2052);
+            padding: 70px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .contact-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 50px;
+        }
+
+        .contact-hero span {
+            color: #38bdf8;
+        }
+
+        .contact-wrapper {
+            max-width: 1100px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 25px;
+            padding: 50px 20px;
+        }
+
+        .info-card, .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .info-card {
+            margin-bottom: 15px;
+        }
+
+        .info-icon {
+            width: 45px;
+            height: 45px;
+            background: #0ea5e9;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        /* 🔥 BUTTON STYLING ADDED */
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(14,165,233,0.4);
+        }
+
+        .btn-clear {
+            background: #e2e8f0;
+            color: #1e293b;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-clear:hover {
+            background: #cbd5e1;
+        }
+
+    </style>
+</head>
+
+<body>
+
+{% include 'header.html' %}
+
+<div class="contact-hero">
+    <h1>Contact <span>Us</span></h1>
+    <p>We are here to help you anytime</p>
+</div>
+
+<div class="contact-wrapper">
+
+    <!-- LEFT INFO -->
+    <div>
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <h4>Address</h4>
+            <p> Shivaji Nagar Pune,Maharashtra</p>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-phone"></i></div>
+            <h4>Phone</h4>
+            <p>+91 9191919191</p>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon"><i class="fas fa-envelope"></i></div>
+            <h4>Email</h4>
+            <p>Secure Shift@gmail.com</p>
+        </div>
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="form-card">
+        <h2>Send Message</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label>Full Name</label>
+            <input type="text" name="fullname">
+
+            <label>Contact</label>
+            <input type="text" name="contact">
+
+            <label>Email</label>
+            <input type="email" name="email">
+
+            <label>Subject</label>
+            <input type="text" name="subject">
+
+            <label>Message</label>
+            <textarea name="message"></textarea>
+
+            <button class="btn btn-send" type="submit">Send Message</button>
+            <button class="btn btn-clear" type="reset">Clear</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- ✅ WORKING POPUP WITHOUT VIEW CHANGE -->
+{% if request.method == "POST" %}
+    <script>
+        alert("Your message has been submitted!");
+    </script>
+{% endif %}
+
+</body>
+</html>

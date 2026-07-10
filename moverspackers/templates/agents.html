@@ -1,0 +1,300 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .ag-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    .ag-page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .ag-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .ag-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+        color: #fff;
+        font-size: 18px;
+    }
+    .ag-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .ag-page-header p  { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .ag-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 360px) 1fr;
+        gap: 22px;
+        align-items: start;
+    }
+
+    .ag-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+        overflow: hidden;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+    .ag-card-stripe { height: 5px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); }
+    .ag-card-body { padding: 26px 28px; }
+    .ag-card-title { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 18px; }
+
+    .ag-form-group { margin-bottom: 16px; }
+    .ag-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+    }
+    .ag-input, .ag-textarea {
+        width: 100%;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        color: #1e293b;
+        background: #f8fafc;
+        outline: none;
+        transition: border-color .25s, box-shadow .25s, background .25s;
+    }
+    .ag-input:focus, .ag-textarea:focus {
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 4px rgba(124,58,237,.12);
+        background: #fff;
+    }
+    .ag-textarea { min-height: 80px; resize: vertical; }
+
+    .ag-check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .ag-btn {
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(124,58,237,.35);
+        transition: transform .2s, box-shadow .2s;
+    }
+    .ag-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,.45); }
+
+    .ag-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .ag-table-header span { font-size: 13px; color: #94a3b8; }
+    .ag-search {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        min-width: 240px;
+        background: #f8fafc;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+    }
+    .ag-search:focus { border-color: #7c3aed; background: #fff; }
+
+    .ag-table-wrap { overflow-x: auto; }
+    .ag-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .ag-table thead tr { background: #f8f5ff; }
+    .ag-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #7c3aed;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-bottom: 2px solid #ede9fe;
+        white-space: nowrap;
+    }
+    .ag-table th:last-child, .ag-table td:last-child { text-align: center; }
+    .ag-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .2s; }
+    .ag-table tbody tr:hover { background: #faf5ff; }
+    .ag-table td { padding: 14px 16px; color: #334155; vertical-align: middle; }
+
+    .ag-name { font-weight: 700; color: #1e293b; }
+    .ag-muted { color: #94a3b8; font-size: 13px; }
+    .ag-status {
+        display: inline-flex;
+        padding: 4px 11px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+    .ag-status.active { background: #dcfce7; color: #15803d; }
+    .ag-status.inactive { background: #fee2e2; color: #b91c1c; }
+    .ag-delete {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: #fff1f2;
+        color: #e11d48;
+        border: 1.5px solid #fecdd3;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, color .2s, transform .2s;
+    }
+    .ag-delete:hover {
+        background: #e11d48;
+        color: #fff;
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .ag-empty { text-align: center; padding: 44px 20px; color: #94a3b8; }
+
+    @keyframes slideDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp    { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    @media (max-width: 900px) {
+        .ag-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="ag-page">
+    <div class="ag-page-header">
+        <div class="ag-page-header-left">
+            <div class="ag-icon-wrap"><i class="fas fa-user-tie"></i></div>
+            <div>
+                <h2>Agents</h2>
+                <p>Add agents and assign them to bookings</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ag-grid">
+        <div class="ag-card">
+            <div class="ag-card-stripe"></div>
+            <div class="ag-card-body">
+                <div class="ag-card-title">Add Agent</div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="ag-form-group">
+                        <label class="ag-label">Name</label>
+                        <input type="text" name="name" class="ag-input" required>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-label">Mobile</label>
+                        <input type="text" name="mobile" class="ag-input">
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-label">Email</label>
+                        <input type="email" name="email" class="ag-input">
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-label">Address</label>
+                        <textarea name="address" class="ag-textarea"></textarea>
+                    </div>
+                    <label class="ag-check-row">
+                        <input type="checkbox" name="is_active" checked>
+                        Active agent
+                    </label>
+                    <button type="submit" class="ag-btn">Save Agent</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="ag-card">
+            <div class="ag-card-stripe"></div>
+            <div class="ag-card-body">
+                <div class="ag-table-header">
+                    <span>{{ agents|length }} agent{{ agents|length|pluralize }} found</span>
+                    <input type="text" class="ag-search" placeholder="Search agents..." oninput="filterAgents(this.value)">
+                </div>
+
+                <div class="ag-table-wrap">
+                    <table class="ag-table" id="agentsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Bookings</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agent in agents %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><span class="ag-name">{{ agent.name }}</span></td>
+                                <td>{{ agent.mobile|default:"-" }}</td>
+                                <td>{{ agent.email|default:"-" }}</td>
+                                <td><span class="ag-muted">{{ agent.address|default:"-" }}</span></td>
+                                <td>
+                                    {% if agent.is_active %}
+                                        <span class="ag-status active">Active</span>
+                                    {% else %}
+                                        <span class="ag-status inactive">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ agent.bookings.count }}</td>
+                                <td>
+                                    <a href="{% url 'delete_agent' agent.id %}" class="ag-delete"
+                                       onclick="return confirm('Delete this agent? Existing bookings will become unassigned.')">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8">
+                                    <div class="ag-empty">No agents added yet.</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterAgents(q) {
+        var rows = document.querySelectorAll('#agentsTable tbody tr');
+        var lq = q.toLowerCase();
+        rows.forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(lq) ? '' : 'none';
+        });
+    }
+</script>
+
+{% endblock %}

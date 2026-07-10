@@ -1,0 +1,270 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block main %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .pm-page {
+        font-family: 'Outfit', sans-serif;
+        min-height: 100vh;
+        background: #f1f5f9;
+        padding: 40px 32px;
+    }
+
+    .pm-page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 28px;
+        animation: slideDown 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-page-header-left { display: flex; align-items: center; gap: 14px; }
+    .pm-icon-wrap {
+        width: 44px; height: 44px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(124,58,237,.35);
+    }
+    .pm-icon-wrap svg { color: white; width: 20px; height: 20px; }
+    .pm-page-header h2 { font-size: 22px; font-weight: 700; color: #1e293b; }
+    .pm-page-header p  { font-size: 13px; color: #94a3b8; margin-top: 1px; }
+
+    .pm-archive-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 14px;
+        background: #f3e8ff; color: #7c3aed;
+        border-radius: 20px; font-size: 12px; font-weight: 700;
+        border: 1.5px solid #e9d5ff;
+    }
+
+    .pm-stats-row {
+        display: flex; gap: 16px; margin-bottom: 24px;
+        animation: fadeUp 0.5s cubic-bezier(.22,1,.36,1) 0.06s both;
+    }
+    .pm-stat-card {
+        flex: 1; background: white; border-radius: 16px;
+        padding: 18px 22px; display: flex; align-items: center; gap: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid #7c3aed;
+    }
+    .pm-stat-card .stat-icon {
+        width: 42px; height: 42px; border-radius: 12px; background: #f3e8ff;
+        display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .stat-label { font-size: 12px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+    .stat-value { font-size: 22px; font-weight: 700; color: #1e293b; margin-top: 2px; }
+
+    .pm-card {
+        background: #fff; border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07); overflow: hidden;
+        animation: fadeUp 0.55s cubic-bezier(.22,1,.36,1) 0.1s both;
+    }
+    .pm-card-stripe { height: 5px; background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899); }
+    .pm-card-body { padding: 28px 30px; }
+
+    .pm-table-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .pm-table-header span { font-size: 13px; color: #94a3b8; }
+    .pm-search-wrap {
+        display: flex; align-items: center;
+        background: #f8fafc; border: 1.5px solid #e2e8f0;
+        border-radius: 12px; padding: 10px 16px; gap: 10px; max-width: 280px;
+        transition: border-color .25s, box-shadow .25s;
+    }
+    .pm-search-wrap:focus-within {
+        border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,.1); background: white;
+    }
+    .pm-search-wrap svg { color: #94a3b8; width: 16px; height: 16px; flex-shrink: 0; }
+    .pm-search-wrap input {
+        border: none; background: transparent; outline: none;
+        font-family: 'Outfit', sans-serif; font-size: 14px; color: #1e293b; width: 100%;
+    }
+
+    .pm-table-wrap { overflow-x: auto; }
+    .pm-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .pm-table thead tr { background: #f8f5ff; }
+    .pm-table thead th {
+        padding: 13px 16px; text-align: left;
+        font-size: 11.5px; font-weight: 700; color: #7c3aed;
+        text-transform: uppercase; letter-spacing: .5px;
+        border-bottom: 2px solid #ede9fe; white-space: nowrap;
+    }
+    .pm-table thead th:last-child { text-align: center; }
+    .pm-table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background .2s, transform .2s;
+        animation: rowSlide .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    .pm-table tbody tr:hover { background: #faf5ff; transform: translateX(3px); }
+    .pm-table tbody tr:last-child { border-bottom: none; }
+    .pm-table td { padding: 14px 16px; color: #334155; vertical-align: middle; }
+    .pm-table td:last-child { text-align: center; }
+
+    .pm-table tbody tr:nth-child(1) { animation-delay:.06s; }
+    .pm-table tbody tr:nth-child(2) { animation-delay:.10s; }
+    .pm-table tbody tr:nth-child(3) { animation-delay:.14s; }
+    .pm-table tbody tr:nth-child(4) { animation-delay:.18s; }
+    .pm-table tbody tr:nth-child(5) { animation-delay:.22s; }
+    .pm-table tbody tr:nth-child(6) { animation-delay:.26s; }
+    .pm-table tbody tr:nth-child(7) { animation-delay:.30s; }
+    .pm-table tbody tr:nth-child(8) { animation-delay:.34s; }
+
+    .pm-sno {
+        width: 30px; height: 30px; background: #f3e8ff; color: #7c3aed;
+        border-radius: 8px; display: inline-flex; align-items: center;
+        justify-content: center; font-size: 12px; font-weight: 700;
+    }
+    .pm-name-cell  { font-weight: 600; color: #1e293b; }
+    .pm-email-cell { font-size: 13px; color: #64748b; }
+    .pm-mobile-cell { font-size: 13px; font-weight: 500; }
+
+    .pm-completed-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 12px;
+        background: #f3e8ff; color: #7c3aed;
+        border: 1.5px solid #e9d5ff;
+        border-radius: 20px; font-size: 11.5px; font-weight: 700;
+    }
+
+    .pm-action-group { display: flex; gap: 6px; justify-content: center; }
+    .pm-btn-view, .pm-btn-del {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 6px 14px; border-radius: 8px;
+        font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+        text-decoration: none; border: none; cursor: pointer;
+        transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+    }
+    .pm-btn-view { background: #f3e8ff; color: #7c3aed; border: 1.5px solid #e9d5ff; }
+    .pm-btn-view:hover { background: #7c3aed; color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(124,58,237,.3); text-decoration: none; }
+    .pm-btn-del  { background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; }
+    .pm-btn-del:hover  { background: #e11d48; color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(225,29,72,.3); text-decoration: none; }
+
+    .pm-empty { text-align: center; padding: 60px 20px; color: #94a3b8; }
+    .pm-empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .pm-empty p { font-size: 15px; }
+
+    @keyframes slideDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp    { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+    @keyframes rowSlide  { from { opacity:0; transform:translateX(-16px); } to { opacity:1; transform:translateX(0); } }
+</style>
+
+<div class="pm-page">
+
+    <div class="pm-page-header">
+        <div class="pm-page-header-left">
+            <div class="pm-icon-wrap">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Old Bookings</h2>
+                <p>Completed and archived booking records</p>
+            </div>
+        </div>
+        <span class="pm-archive-badge">🗂 Archive</span>
+    </div>
+
+    <div class="pm-stats-row">
+        <div class="pm-stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+                <div class="stat-label">Completed Bookings</div>
+                <div class="stat-value">{{ booking|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pm-card">
+        <div class="pm-card-stripe"></div>
+        <div class="pm-card-body">
+            <div class="pm-table-header">
+                <span>{{ booking|length }} record{{ booking|length|pluralize }} in archive</span>
+                <div class="pm-search-wrap">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search records…" oninput="filterTable(this.value)">
+                </div>
+            </div>
+
+            <div class="pm-table-wrap">
+                <table class="pm-table" id="bookingTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                            <th>Agent</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in booking %}
+                        <tr>
+                            <td><span class="pm-sno">{{ forloop.counter }}</span></td>
+                            <td><span class="pm-name-cell">{{ i.name }}</span></td>
+                            <td><span class="pm-email-cell">{{ i.email }}</span></td>
+                            <td><span class="pm-mobile-cell">{{ i.mobile }}</span></td>
+                            <td>
+                                {% if i.assigned_agent %}
+                                    <span class="pm-completed-badge">{{ i.assigned_agent.name }}</span>
+                                {% else %}
+                                    <span class="pm-email-cell">Not assigned</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="pm-completed-badge">✓ Completed</span></td>
+                            <td>
+                                <div class="pm-action-group">
+                                    <a href="{% url 'view_bookingdetail' i.id %}" class="pm-btn-view">
+                                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'delete_booking' i.id %}" class="pm-btn-del"
+                                       onclick="return confirm('Delete this booking record?')">
+                                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="pm-empty">
+                                    <div class="pm-empty-icon">🗃️</div>
+                                    <p>No archived bookings found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterTable(q) {
+        var rows = document.querySelectorAll('#bookingTable tbody tr');
+        var lq = q.toLowerCase();
+        rows.forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(lq) ? '' : 'none';
+        });
+    }
+</script>
+
+{% endblock %}

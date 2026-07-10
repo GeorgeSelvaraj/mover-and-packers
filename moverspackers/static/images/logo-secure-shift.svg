@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="ssMarkGrad" x1="6" y1="4" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffb300"/>
+      <stop offset="1" stop-color="#ff8f00"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#ssMarkGrad)"/>
+  <!-- Moving truck (side view) -->
+  <g fill="#0d1117">
+    <!-- cargo box -->
+    <rect x="8" y="17" width="20" height="13" rx="1.2"/>
+    <!-- cab -->
+    <path d="M28 17h8.5l4.5 6.2V30H28V17z"/>
+    <!-- window -->
+    <path fill="#ffb300" fill-opacity="0.35" d="M30.5 19.2h5.2l2.8 3.8h-8V19.2z"/>
+    <!-- wheels -->
+    <circle cx="16" cy="32.5" r="3.2" fill="#1a1f28" stroke="#0d1117" stroke-width="0.5"/>
+    <circle cx="16" cy="32.5" r="1.2" fill="#64748b"/>
+    <circle cx="34" cy="32.5" r="3.2" fill="#1a1f28" stroke="#0d1117" stroke-width="0.5"/>
+    <circle cx="34" cy="32.5" r="1.2" fill="#64748b"/>
+    <!-- bumper line -->
+    <rect x="8" y="29.5" width="32" height="1.2" rx="0.4" fill="#0d1117" fill-opacity="0.25"/>
+  </g>
+  <!-- speed lines -->
+  <path stroke="#0d1117" stroke-opacity="0.25" stroke-width="1.4" stroke-linecap="round" d="M5 14h6M5 17.5h9"/>
+</svg>

@@ -1,0 +1,115 @@
+{% load static %}
+{% include 'header.html' %}
+
+<!-- 🔥 HERO -->
+<div style="
+height:100vh;
+background:url('{% static 'images/login image.png' %}') center/cover no-repeat;
+position:relative;
+">
+
+<!-- OVERLAY -->
+<div style="
+position:absolute;
+width:100%;
+height:100%;
+background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+"></div>
+
+<!-- CONTENT -->
+<div style="
+position:relative;
+color:white;
+top:50%;
+transform:translateY(-50%);
+text-align:center;
+animation:fadeIn 1.5s;
+">
+
+<h1 style="font-size:60px; font-weight:700;">
+Secure Shift Packers & Movers
+</h1>
+
+<p style="font-size:22px; letter-spacing:1px;">
+Safe • Fast • Reliable Moving Services
+</p>
+
+<a href="{% url 'request_quote' %}" class="btn btn-warning mt-4 px-4 py-2"
+style="border-radius:30px; font-size:18px;">
+Get a Quote
+</a>
+
+</div>
+</div>
+
+<!-- 🔥 ABOUT -->
+<div class="container text-center mt-5" style="animation:fadeUp 1s;">
+<h2>About Us</h2>
+<p class="mt-3 text-muted">
+We provide professional packing and moving services with complete safety and trust.
+From home shifting to office relocation and vehicle transport — we handle everything.
+</p>
+</div>
+
+<!-- 🔥 SERVICES -->
+<div class="container text-center mt-5 mb-5">
+
+<h2>Our Services</h2>
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+<div class="card p-4 shadow service">
+<i class="fa fa-home fa-3x text-warning"></i>
+<h5 class="mt-3">Home Shifting</h5>
+<p>Safe and secure household relocation</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-4 shadow service">
+<i class="fa fa-building fa-3x text-warning"></i>
+<h5 class="mt-3">Office Relocation</h5>
+<p>Professional office shifting services</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card p-4 shadow service">
+<i class="fa fa-car fa-3x text-warning"></i>
+<h5 class="mt-3">Vehicle Transport</h5>
+<p>Secure vehicle transport solutions</p>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- 🔥 FOOTER -->
+<footer style="background:#0d1117; color:#aaa;" class="text-center p-4">
+<h5 style="color:#ffb300;">Secure Shift Packers & Movers</h5>
+<p>© 2026 All Rights Reserved</p>
+</footer>
+
+<!-- 🔥 ANIMATIONS -->
+<style>
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(30px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(50px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* CARD HOVER */
+.service{
+transition:0.3s;
+}
+
+.service:hover{
+transform:translateY(-12px);
+box-shadow:0 15px 35px rgba(0,0,0,0.3);
+}
+</style>
