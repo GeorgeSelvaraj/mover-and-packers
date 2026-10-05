@@ -1,5 +1,6 @@
      
 # Movers & Packers
+# Created By George Selvaraj 
 
 A Django-based web application for a Packers & Movers company. It includes a public-facing website (services, about, contact, request a quote) and a full admin dashboard for managing services, bookings, field agents, customer queries, reports, and admin users.
 
